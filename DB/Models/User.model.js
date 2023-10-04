@@ -29,6 +29,9 @@ const userSchema = new Schema({
         required: true,
         min: 20,
         max: 80
+    },
+    profilepic:{
+        type:String,
     }
 }, {
     timestamps: true,

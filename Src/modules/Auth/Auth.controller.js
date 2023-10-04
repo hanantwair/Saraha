@@ -41,9 +41,8 @@ export const signin = async (req, res) => {
 
 
 export const confirmEmail = async (req, res, next) => {
-    const { token } = req.params;
+    const { token } = req.query;
     const decoded = jwt.verify(token, process.env.SIGNUP_SECRET);
-
     const user = await userModel.findOneAndUpdate({ email: decoded.email, confirmEmail: false }, { confirmEmail: true });
     if (!user) {
         return res.status(400).json({ message: "Your Email is Verified!" });
@@ -53,7 +52,7 @@ export const confirmEmail = async (req, res, next) => {
     }
 }
 export const newConfirmEmail = async (req, res, next) => {
-    const { refreshToken } = req.params;
+    const { refreshToken } = req.query;
     const decoded = jwt.verify(refreshToken, process.env.SIGNUP_SECRET);
     const token = jwt.sign({ email: decoded.email }, process.env.SIGNUP_SECRET, { expiresIn: '1h' });
     const link = `${req.protocol}://${req.headers.host}/auth/confirmEmail/${token}`;

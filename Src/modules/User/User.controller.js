@@ -1,4 +1,5 @@
 import userModel from '../../../DB/Models/User.model.js';
+import cloudinary from '../../services/cloudinary.js'
 
 export const getUsers = async (req, res) => {
     const users = await userModel.find();
@@ -11,8 +12,17 @@ export const getUsers = async (req, res) => {
 }
 
 export const profile = async (req, res) => {
-    return res.status(200).json({ message: req.user });
+    // const imgurl = req.file.destination + '/' + req.file.filename;
+
+    const { secure_url } = await cloudinary.uploader.upload(req.file.path, {
+        folder: `${process.env.APP_NAME}/user/${req.user._id}/profile`
+    });
+    const user = await userModel.findByIdAndUpdate(req.user._id, { profilepic: secure_url }, { new: true });
+
+    return res.status(200).json({ message: user });
+
 }
+
 
 export const deleteUser = async (req, res) => {
     const id = req.user._id;
