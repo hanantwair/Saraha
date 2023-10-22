@@ -2,7 +2,6 @@ import express from "express";
 import * as userController from './User.controller.js';
 import { Auth } from './../../middleware/auth.js';
 import { asyncHandler } from "../../middleware/errorHandling.js";
-// import fileUpload, { fileValidation } from '../../services/multer.js';
 import fileUpload, { fileValidation } from '../../services/multerCloudinary.js';
 import * as validators from './User.validation.js';
 import validation from '../../middleware/validation.js';

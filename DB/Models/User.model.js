@@ -44,19 +44,3 @@ const userSchema = new Schema({
 const userModel = mongoose.model.User || model('User', userSchema);
 
 export default userModel;
-
-
-
-
-// toJSON: {
-//     virtuals: true
-// },
-// toObject: {
-//     virtuals: true
-// }
-
-// userSchema.virtual('Message', {
-//     ref: 'Message',
-//     localField: '_id',
-//     foreignField: 'userId'
-// });

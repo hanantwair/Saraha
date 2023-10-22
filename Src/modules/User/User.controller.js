@@ -35,10 +35,6 @@ export const profile = async (req, res, next) => {
         await cloudinary.uploader.destroy(user.profilepic.public_id);
     }
     return res.status(200).json({ message: 'success', user });
-
-
-    // const user = await userModel.findByIdAndUpdate(req.user._id,
-    //     { profilepic: `${req.file.dest}` }, { new: true });
 }
 
 export const coverPic = async (req, res, next) => {
@@ -64,7 +60,6 @@ export const updatePassword = async (req, res, next) => {
     }
 
     const hashedPassword = bcrypt.hashSync(newPassword, parseInt(process.env.SALTROUND));
-    // await userModel.findByIdAndUpdate(req.user._id, { password: hashedPassword });
     user.password = hashedPassword;
     user.save();
     return res.json(user);
