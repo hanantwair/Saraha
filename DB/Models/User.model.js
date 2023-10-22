@@ -30,8 +30,11 @@ const userSchema = new Schema({
         min: 20,
         max: 80
     },
-    profilepic:{
-        type:String,
+    profilepic: {
+        type: Object,
+    },
+    cover: {
+        type: [String],
     }
 }, {
     timestamps: true,

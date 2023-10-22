@@ -3,11 +3,11 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import sendEmail from '../../services/sendEmail.js';
 
-export const signup = async (req, res) => {
+export const signup = async (req, res, next) => {
     const { userName, email, password, gender, age } = req.body;
     let user = await userModel.findOne({ email });
     if (user) {
-        return res.status(409).json({ message: 'Email Exists!' });
+        return next(new Error("Email Exists!"));
     }
     const hashedPassword = bcrypt.hashSync(password, parseInt(process.env.SALTROUND));
     user = await userModel.create({ userName, email, password: hashedPassword, gender, age });
@@ -22,18 +22,18 @@ export const signup = async (req, res) => {
     return res.status(201).json({ message: 'success', user: user._id, token });
 }
 
-export const signin = async (req, res) => {
+export const signin = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await userModel.findOne({ email });
     if (!user) {
-        return res.status(404).json({ message: 'Invaild Data' });
+        return next(new Error("Data invalid"));
     }
     if (!user.confirmEmail) {
-        return res.status(400).json({ message: 'plz confirm your email' });
+        return next(new Error("plz confirm your email"));
     }
     const match = bcrypt.compare(password, user.password);
     if (!match) {
-        return res.status(404).json({ message: "Invalid Data" });
+        return next(new Error("Data invalid"));
     }
     const token = jwt.sign({ id: user._id }, process.env.LOGIN_SECRET);
     return res.status(200).json({ message: "success", user, token });
@@ -43,14 +43,17 @@ export const signin = async (req, res) => {
 export const confirmEmail = async (req, res, next) => {
     const { token } = req.query;
     const decoded = jwt.verify(token, process.env.SIGNUP_SECRET);
-    const user = await userModel.findOneAndUpdate({ email: decoded.email, confirmEmail: false }, { confirmEmail: true });
+    const user = await userModel.findOneAndUpdate({ email: decoded.email, confirmEmail: false },
+        { confirmEmail: true });
     if (!user) {
-        return res.status(400).json({ message: "Your Email is Verified!" });
+        return next(new Error("Your Email is Verified!"));
+
     }
     else {
         return res.redirect(process.env.FRONTEND_LOGIN);
     }
 }
+
 export const newConfirmEmail = async (req, res, next) => {
     const { refreshToken } = req.query;
     const decoded = jwt.verify(refreshToken, process.env.SIGNUP_SECRET);
